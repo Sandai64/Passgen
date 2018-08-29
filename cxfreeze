@@ -1,0 +1,6 @@
+#!C:\Program Files (x86)\Python36-32\python.exe
+
+from cx_Freeze import main
+
+main()
+
