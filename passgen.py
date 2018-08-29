@@ -1,6 +1,3 @@
-#Erwan's Password Gen 1.4.2
-
-
 import string, os, sys, random, time, io
 from secrets import choice, token_hex
 from base64 import b64encode
@@ -8,17 +5,17 @@ from decimal import Decimal
 from colorama import init
 from termcolor import cprint, colored
 from passgenlib import get_folder_size
-init()
+init() #Makes colors work on windows terminals
 
-programVersion = "1.4.2"
+programVersion = "1.0"
 
-print("MettaliKk's Automated Password Algorithm - MAPA")
-print("Version " + programVersion)
+print("MettaliKk's Passgen")
+print("Version", colored(programVersion, "cyan"))
 
 cprint("===Warning===", "yellow")
 print("Using this program can", colored("severely", "cyan"), "fragment your disk")
 print("Please use it on an alternative drive")
-print("As it can write thousands of time per second.")
+print("As it could call the file thousands of time per second.")
 print("\nPlease type 'YES' without quotes to start generating")
 userContinue = input("Continue?> ")
 
@@ -34,10 +31,9 @@ else:
     #But as this is a user action, it should be 0
 
 print("========")
-print("Would you like to generate in Hexadeimals?")
-print("If YES, it will generate unsecure passwords")
-print("It should only be used when you are-")
-print("securely erasing a disk")
+print("Would you like to generate in "+colored("Hexadecimals", "cyan")+"?")
+print("If YES, it will generate significantly faster,")
+print("but the output will be "+colored("unsecure passwords", "yellow"))
 print("It overrides:")
 print("-Number of bits (from)")
 print("-Additionnal infos")
@@ -71,7 +67,7 @@ os.mkdir(folder_name)
 #User selects charlist or create a new one
 #Default: chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
 
-while True: #Loops menu, if invalid choice is selectd
+while True: #Loops menu if invalid choice is selectd
     print("Please select a charlist:")
     print("1/ ASCII w/o specials")
     print("2/ ASCII w/ specials")
@@ -111,35 +107,31 @@ startTime = time.time() #Picking current time, to substract later
 
 for mult in range(num_files): #For given number of files
     file_name = file_prefix + str(mult) + file_extension
-    fileBuffer = [] #Inits the file buffer
     print("Generating", str(num_passwords), "passwords in", file_name, "...")
-    
-    if fast_gen == True: #Faster possible
+    currentFile = open(file_name, "w", 8196)
+
+    if fast_gen == True: #Fast generation; not secure
         currentFile = open(file_name, "w")
         for x in range(num_passwords):
             currentFile.write(token_hex(nbytes=num_bits_to)) #Max number of bits
         currentFile.close()
     else: #Normal Gen mode
         if add_infos == "1": #if user requested to write add. infos in file
-            fileBuffer.append("====Generation====\n")
-            fileBuffer.append("bits per line (from): "+str(num_bits_from)+"\n")
-            fileBuffer.append("bits per line (to): "+str(num_bits_to)+"\n")
-            fileBuffer.append("total codes: "+str(num_passwords)+"\n")
-            fileBuffer.append("====Start====\n")
+            currentFile.write("====Generation====\n")
+            currentFile.write("bits per line (from): "+str(num_bits_from)+"\n")
+            currentFile.write("bits per line (to): "+str(num_bits_to)+"\n")
+            currentFile.write("total codes: "+str(num_passwords)+"\n")
+            currentFile.write("====Start====\n")
         
             for x in range(num_passwords):
-                fileBuffer.append(str(x)+": "+''.join([choice(chars) for _ in range(random.randint(num_bits_from, num_bits_to))])+"\n")
+                currentFile.write(str(x)+": "+''.join([choice(chars) for _ in range(random.randint(num_bits_from, num_bits_to))])+"\n")
         else: #Do not write additionnal infos in file
 
             for x in range(num_passwords): #Generate passwords with bits from int and to int
-                fileBuffer.append(''.join([choice(chars) for _ in range(random.randint(num_bits_from, num_bits_to))])+"\n")
-            
-        currentFile = open(file_name, "w", 8196) #Writes to disk (buffers to 1 Megabyte - ssd friendly)
-        currentFile.write(''.join(fileBuffer)) #Writes the buffer to the disk
-        currentFile.close() #Flush IO
-        del fileBuffer #Calls the GC (hopefully) - Deletes list fileBuffer
-    os.system("move "+file_name+" "+folder_name) #Closes and move file to folder, iterating again
+                currentFile.write(''.join([choice(chars) for _ in range(random.randint(num_bits_from, num_bits_to))])+"\n")
 
+    currentFile.close() #Flushes IO
+    os.system("move "+file_name+" "+folder_name) #moves file to folder, iterating again
 
 finalTime_seconds = int(time.time() - startTime)
 finalTime_minutes = finalTime_seconds // 60
