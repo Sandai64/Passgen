@@ -1,3 +1,8 @@
+# Passgen - A Password generator written in Python 3
+# Created by MettaliK - MIT Licensed (2018)
+# ================================== 
+# Any help on optimizing the generator will be more than welcome
+
 import string, os, sys, random, time, io
 from secrets import choice, token_hex
 from base64 import b64encode
