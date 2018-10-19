@@ -1,7 +1,7 @@
 # Passgen - A Password generator written in Python 3
 # Created by MettaliK - MIT Licensed (2018)
 # ================================== 
-# Any help on optimizing the generator will be more than welcome
+# Any help on optimizing the generator will be more than welcome!
 
 import string, os, sys, random, time, io
 from secrets import choice, token_hex
@@ -12,7 +12,7 @@ from termcolor import cprint, colored
 from passgenlib import get_folder_size
 init() #Makes colors work on windows terminals
 
-programVersion = "1.0"
+programVersion = "1.0.1"
 
 print("MettaliKk's Passgen")
 print("Version", colored(programVersion, "cyan"))
