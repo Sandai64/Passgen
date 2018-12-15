@@ -1,155 +1,172 @@
-import string, os, sys, random, time, gc
+# Passgen -- A password generator written in Python 3
+# File: Main script (is the freezed script)
+# ---------------------------------------------------
+
+programVersion = "1.2.1"
+
+import string
+import os
+import sys
+import random
+import time
+import gc
 from secrets import choice, token_hex
 from decimal import Decimal
 from colorama import init
 from termcolor import cprint, colored
-init() #Makes colors work on windows terminals
 
-def get_folder_size(start_path):
-    total_size = 0
-    for dirpath, dirnames, filenames in os.walk(start_path):
-        for f in filenames:
-            fp = os.path.join(dirpath, f)
-            total_size += os.path.getsize(fp)
-    return total_size
+init() # From colorama, makes colors work on non-compatible terminals
 
-programVersion = "1.2"
+def get_folder_size(start_path): # Returns the directory size in bytes
+	total_size = 0
+	for dirpath, dirnames, filenames in os.walk(start_path):
+		for f in filenames:
+			fp = os.path.join(dirpath, f)
+			total_size += os.path.getsize(fp)
+	return total_size
 
-print("MTLK's Password Generator")
-print("Version", colored(programVersion, "cyan"))
+def main():
+	print("MTLK's Password Generator")
+	print("Version", colored(programVersion, "cyan"))
 
-print("====Selectionnez un mode====")
-print("1/ Génération rapide ("+colored("hexadécimal", "yellow")+")")
-print("2/ Génération lente ("+colored("ascii", "green")+")")
+	print("====Select a generation mode====")
+	print("1/ secrets.token_hex()")
+	print("2/ secrets.choice() [recommended]")
 
-fast_gen = input(">")
-if fast_gen == "1":
-    fast_gen = True
+	if input("> ") == "1":
+		str_generation_mode = "HEX"
+	else:
+		str_generation_mode = "ASCII"
 
+	int_files_to_generate = int(input("[INT] Number of files to create? : "))
+	int_passwords_to_generate = int(input("[INT] Number of passwords to generate in each file? : "))
+	int_bits_to_generate_min = int(input("[INT] Minimum number of bits? : "))
+	int_bits_to_generate_max = int(input("[INT] Maximum number of bits? : "))
+	int_buffer_size = int(input("[INT] Disk buffer size in bytes? : "))
+	int_binchoice_add_verbosity = int(input("[INT] Augmenter la verbosité? [1/0]: "))
 
-#Requesting informations -
-#must be int
-num_files = int(input("[INT] Nombre de fichiers: "))
-num_passwords = int(input("[INT] Nombre de codes: "))
-num_bits_from = int(input("[INT] Nombre de caractères (début): "))
-num_bits_to = int(input("[INT] Nombre de caractères (fin): "))
-_BUFFERSIZE = int(input("[INT] Taille du buffer (16000000 recommandé): "))
+	str_folder_name = str(input("[STR] Folder name? : "))
+	str_file_prefix = str(input("[STR] File prefix? : "))
+	str_file_extension = str(input("[STR] File extension? : "))
 
-#must be str
-add_infos = str(input("[INT] Augmenter la verbosité? [1/0]: "))
-folder_name = str(input("[STR] Nom du dossier (créer un nouveau si possible): "))
-file_prefix = str(input("[STR] Préfixe du fichier: "))
-file_extension = str(input("[STR] Extension du fichier (ex: .txt): "))
+	#creating folder, works on Windows / Linux
+	cprint("[INFO]: Creating folder '" + str_folder_name + "'...")
 
-#creating folder, works on Windows / Linux
-print("Création du dossier '" + colored(folder_name, "cyan") + "'...")
-
-try:
-    os.mkdir(folder_name)
-except: #Assuming that the folder already exists
-    print("->Le dossier existe peut-être déjà (returned OSError)")
+	try:
+		os.mkdir(str_folder_name)
+	except:
+	 	cprint("[WARN]: The folder may already exist", "yellow")
 
 
-#User selects charlist or create a new one
+	# Here the user selects a set of characters to generate
 
-while True: #Loops menu if invalid choice is selected
-    print("========")
-    print("Veuillez séléctionnez une table de caractères:")
-    print("1/ ASCII sans ponctuation")
-    print("2/ ASCII avec ponctuation")
-    print("3/ Créer une table")
-    print("4/ Charger dans un fichier")
-    charlistChoice = str(input("\n[INT] (1/2/3/4): "))
+	if str_file_extension == "HEX":
+		pass
 
-    if charlistChoice == "1": #Ascii w/o specials
-        chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-        break
+	else:
+		while True:
+			print("========")
+			print("Please select a list of characters to generate:")
+			print("1/ ASCII + digits")
+			print("2/ ASCII + digits + punctuaction")
+			print("3/ Create a new set")
+			print("4/ Load a new set from a file")
+			int_charlist_choice = str(input("\n[INT] (1/2/3/4): "))
 
-    elif charlistChoice == "2": #Ascii w/ specials
-        chars = string.punctuation + string.ascii_uppercase + string.ascii_lowercase + string.digits
-        break
+			if int_charlist_choice == "1": # Ascii w/o specials
+				str_charset = string.ascii_uppercase + string.ascii_lowercase + string.digits
+				break
 
-    elif charlistChoice == "3": #CUSTOM charlist (str)
-        print("========")
-        print("Veuillez entrer une table de caractères sur une ligne")
-        print("Exemple: abcABC123?;!")
-        chars = str(input("> "))
-        break
-    
-    elif charlistChoice == "4":
-        print("Veuillez spécfier le fichier (relatif - Exemple: Table.txt)")
-        userFile = input("Fichier> ")
-        
-        try:
-            fileChars = open(userFile, "r")
-            chars = fileChars.read() #Tries to read and affect to the chars var
-            fileChars.close()
-            break
+			elif int_charlist_choice == "2": # Ascii w/ specials
+				str_charset = string.punctuation + string.ascii_uppercase + string.ascii_lowercase + string.digits
+				break
 
-        except:
-            cprint("Une erreur est survenue lors de l'ouverture du fichier", "red")
-            cprint("Veuillez vérifier que celui-ci existe", "yellow")
-            continue
+			elif int_charlist_choice == "3": # CUSTOM charlist (str)
+				print("========")
+				print("Please enter a new set on this line")
+				print("Exemple: abcABC123?;!")
+				str_charset = str(input("> "))
+				break
+			
+			elif int_charlist_choice == "4":
+				print("Please specify the file to load (Exemple: charset.txt)")
+				userFile = input("File> ")
+				
+				try:
+					with open(userFile, "r") as filestr_charset:
+						str_charset = filestr_charset.read() # Tries to read and set the new charset
+						break
 
-    else:
-        print("Invalid choice!")
-        continue #Goes to the top of the while loop
+				except Exception as e:
+					cprint("An error happended while reading the file", "red")
+					cprint("Reason: " + str(e), "yellow")
+					continue
 
-print("========")
-input("Appuyez sur [ENTRÉE] pour commencer") #like pause but with enter only
-print("Veuillez patienter, cela peut prendre un moment")
-print("========")
-startTime = time.time() #Picking current time, to substract later
+			else:
+				print("Invalid choice!")
+				continue
 
-for mult in range(num_files): #For given number of files
-    gc.collect() # Just in case
-    file_name = file_prefix + str(mult) + file_extension
-    print("Génération de", str(num_passwords), "codes dans", file_name, "...")
-    currentFile = open(file_name, "w", _BUFFERSIZE) # Buffers to 16 Mbytes in RAM
-    if fast_gen == True: #Fast generation; not secure
-        currentFile = open(file_name, "w")
-        for x in range(num_passwords):
-            currentFile.write(token_hex(nbytes=num_bits_to)+"\n")
-        currentFile.close()
+	print("========")
+	input("Press [ENTER] to continue...")
+	print("Please wait, this can take a while...")
+	print("========")
+	startTime = time.time()
 
-    else: #Normal Gen mode
-        if add_infos == "1": #if user requested to write add. infos in file
-            currentFile.write("====Infos====\n")
-            currentFile.write("bits per line (min): "+str(num_bits_from)+"\n")
-            currentFile.write("bits per line (max): "+str(num_bits_to)+"\n")
-            currentFile.write("char table: "+str(chars)+"\n")
-            currentFile.write("file name : "+str(file_name)+"\n")
-            currentFile.write("Buffer size : "+str(_BUFFERSIZE)+"\n")
-            currentFile.write("generator version: "+str(programVersion)+"\n")
-            currentFile.write("total codes: "+str(num_passwords)+"\n")
-            currentFile.write("====Start====\n")
-        
-            for x in range(num_passwords):
-                currentFile.write(str(x)+": "+''.join([choice(chars) for _ in range(random.randint(num_bits_from, num_bits_to))])+"\n")
-        
-        else: #Do not write additionnal infos in file
-            for x in range(num_passwords): currentFile.write(''.join([choice(chars) for _ in range(random.randint(num_bits_from, num_bits_to))])+"\n")
+	for int_file_index in range(int_files_to_generate):
 
-    currentFile.close()
-    print("-> Déplacement du fichier généré...")
-    os.system("move "+file_name+" "+folder_name) #moves file to folder, iterating again if needed
+		str_current_file_name = str_file_prefix + str(int_file_index) + str_file_extension
+		print("Generating " + str(int_passwords_to_generate) + " passwords in " + str_current_file_name + "...")
 
-finalTime_seconds = int(time.time() - startTime)
-finalTime_minutes = finalTime_seconds // 60
-finalTime_hours = finalTime_minutes // 60
+		currentFile = open(str_current_file_name, "w", int_buffer_size)
+		
+		if str_generation_mode == "HEX": # Generate using secrets.token_hex()
+			for x in range(int_passwords_to_generate):
+				currentFile.write(token_hex(nbytes=random.randint(int_bits_to_generate_min, int_bits_to_generate_max))+"\n")
+			currentFile.close()
 
-#It rounds these two vars by 3 additionnal decimals, 
-lastFileSize = round((Decimal(os.path.getsize(folder_name + "/" + file_name) / 1024 / 1024)), 3) #gets the size of the LAST file generated in Bytes, then round it in Megabytes
-folderSize = round((Decimal(get_folder_size(folder_name + "/") / 1024 / 1024)), 3) #gets the folder size in Bytes, round it in Megabytes
+		elif str_generation_mode == "ASCII": # Generate using secrets.choice()
+			if int_binchoice_add_verbosity == 1: # if user requested to write add. infos in file
+				currentFile.write("====Infos====\n")
+				currentFile.write("bits per line (min): "+str(int_bits_to_generate_min)+"\n")
+				currentFile.write("bits per line (max): "+str(int_bits_to_generate_max)+"\n")
+				currentFile.write("char table: "+str(str_charset)+"\n")
+				currentFile.write("file name : "+str(str_current_file_name)+"\n")
+				currentFile.write("Buffer size : "+str(int_buffer_size)+"\n")
+				currentFile.write("generator version: "+str(programVersion)+"\n")
+				currentFile.write("total passwords: "+str(int_passwords_to_generate)+"\n")
+				currentFile.write("====Start====\n")
+			
+				for x in range(int_passwords_to_generate):
+					currentFile.write(''.join([choice(str_charset) for character in range(random.randint(int_bits_to_generate_min, int_bits_to_generate_max))])+"\n")
+			
+			else: # Do not write additionnal infos in file
+				for x in range(int_passwords_to_generate):
+					currentFile.write(''.join([choice(str_charset) for character in range(random.randint(int_bits_to_generate_min, int_bits_to_generate_max))])+"\n")
 
-#Generation completed, shows time taken to complete and size of files
-print("\n\n========\n")
-cprint("Terminé!", "green")
-print("========")
-print("Nombre de fichiers: "+str(num_files))
-print("Taille du dernier fichier généré:", colored(str(lastFileSize) + " Mb", "cyan"))
-print("Taille du dossier:", colored(str(folderSize) + " Mb", "magenta"))
-print("Temps de génération:", str(finalTime_seconds), "secondes (" + str(finalTime_minutes), "minutes (" + str(finalTime_hours), "heures))")
-print("========")
-input("-> Press [ENTER] to continue...")
-sys.exit()
+		currentFile.close()
+		cprint("[INFO]: -> Moving file...", "cyan")
+
+		if os.name == 'nt':
+			os.system("move " + str_current_file_name + " " + str_folder_name)
+		else:
+			os.system("mv " + str_current_file_name + " " + str_folder_name)
+
+	int_finalTime_seconds = int(time.time() - startTime)
+	int_finalTime_minutes = int_finalTime_seconds // 60
+	int_finalTime_hours = int_finalTime_minutes // 60
+
+	# It rounds these by 3 additionnal decimals, 
+	int_lastFileSize = round((Decimal(os.path.getsize(str_folder_name + "/" + str_current_file_name) / 1024 / 1024)), 3) # Gets the size of the last file generated in Bytes, then round it in Megabytes
+	int_folderSize = round((Decimal(get_folder_size(str_current_file_name + "/") / 1024 / 1024)), 3) # Gets the folder size in Bytes, round it in Megabytes
+
+	print("\n========\n")
+	cprint("Done!", "green")
+	print("========")
+	print("Number of files: "+str(int_files_to_generate))
+	print("Last file size generated:", colored(str(int_lastFileSize) + " Mb", "cyan"))
+	print("Folder size (total):", colored(str(int_folderSize) + " Mb", "magenta"))
+	print("Generation time:", str(int_finalTime_seconds), "secondes (" + str(int_finalTime_minutes), "minutes (" + str(int_finalTime_hours), "heures))")
+	print("========")
+	input("-> Press [ENTER] to continue...")
+	sys.exit()
+main()
