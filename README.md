@@ -6,14 +6,14 @@ This program currently works only on Windows
 # How to compile it? (to Win32; cxFreeze)
 First things first, you need these libraries in your Python installation: `Colorama, Termcolor, cxFreeze`
 
-->Please note that the commands listed below should be runned on the Windows command line (with admin privileges)
+-> Please note that the commands listed below should be runned on the Windows command line (with admin privileges)
 
-1/ Installing the dependencies:
+### Installing the dependencies:
 
 `python -m pip install -U pip`
 
 `python -m pip install colorama termcolor cxfreeze`
 
-2/ Compiling
+### Compiling
 
-Run the `BUILD.bat` in the source folder; you now compiled the script from source! yay!
+Run the `BUILD.bat` in the source folder you should now have the `.exe` file! yay!
