@@ -2,7 +2,7 @@
 # File: Main script (is the freezed script)
 # ---------------------------------------------------
 
-programVersion = "1.2.1"
+programVersion = "1.2.2"
 
 import string
 import os
@@ -147,9 +147,9 @@ def main():
 		cprint("[INFO]: -> Moving file...", "cyan")
 
 		if os.name == 'nt':
-			os.system("move " + str_current_file_name + " " + str_folder_name)
+			os.system("move '" + str_current_file_name + "' '" + str_folder_name + "'")
 		else:
-			os.system("mv " + str_current_file_name + " " + str_folder_name)
+			os.system("mv '" + str_current_file_name + "' '" + str_folder_name + "'")
 
 	int_finalTime_seconds = int(time.time() - startTime)
 	int_finalTime_minutes = int_finalTime_seconds // 60
@@ -165,7 +165,7 @@ def main():
 	print("Number of files: "+str(int_files_to_generate))
 	print("Last file size generated:", colored(str(int_lastFileSize) + " Mb", "cyan"))
 	print("Folder size (total):", colored(str(int_folderSize) + " Mb", "magenta"))
-	print("Generation time:", str(int_finalTime_seconds), "secondes (" + str(int_finalTime_minutes), "minutes (" + str(int_finalTime_hours), "heures))")
+	print("Generation time:", str(int_finalTime_seconds), "seconds (" + str(int_finalTime_minutes), "minutes (" + str(int_finalTime_hours), "hours))")
 	print("========")
 	input("-> Press [ENTER] to continue...")
 	sys.exit()
