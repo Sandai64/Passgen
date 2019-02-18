@@ -2,7 +2,7 @@
 # File: Main script (is the freezed script)
 # ---------------------------------------------------
 
-programVersion = "1.2.2"
+programVersion = "1.2.3"
 
 import string
 import os
