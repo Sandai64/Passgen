@@ -10,6 +10,7 @@ import sys
 import random
 import time
 import gc
+import shutil
 from secrets import choice, token_hex
 from decimal import Decimal
 from colorama import init
@@ -146,10 +147,12 @@ def main():
 		currentFile.close()
 		cprint("[INFO]: -> Moving file...", "cyan")
 
-		if os.name == 'nt':
-			os.system("move '" + str_current_file_name + "' '" + str_folder_name + "'")
-		else:
-			os.system("mv '" + str_current_file_name + "' '" + str_folder_name + "'")
+		shutil.move(str_current_file_name, str_folder_name) # that should fix the crash when moving a file (hopefully)
+		
+		#if os.name == 'nt':
+		#	os.system("move '" + str_current_file_name + "' '" + str_folder_name + "'")
+		#else:
+		#	os.system("mv '" + str_current_file_name + "' '" + str_folder_name + "'")
 
 	int_finalTime_seconds = int(time.time() - startTime)
 	int_finalTime_minutes = int_finalTime_seconds // 60
