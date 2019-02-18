@@ -160,15 +160,15 @@ def main():
 
 	# It rounds these by 3 additionnal decimals, 
 	int_lastFileSize = round((Decimal(os.path.getsize(str_folder_name + "/" + str_current_file_name) / 1024 / 1024)), 3) # Gets the size of the last file generated in Bytes, then round it in Megabytes
-	int_folderSize = round((Decimal(get_folder_size(str_current_file_name + "/") / 1024 / 1024)), 3) # Gets the folder size in Bytes, round it in Megabytes
+	int_folderSize = round((Decimal(get_folder_size(str_folder_name + "/") / 1024 / 1024)), 3) # Gets the folder size in Bytes, round it in Megabytes
 
-	print("\n========\n")
+	print("========")
 	cprint("Done!", "green")
 	print("========")
 	print("Number of files: "+str(int_files_to_generate))
-	print("Last file size generated:", colored(str(int_lastFileSize) + " Mb", "cyan"))
-	print("Folder size (total):", colored(str(int_folderSize) + " Mb", "magenta"))
-	print("Generation time:", str(int_finalTime_seconds), "seconds (" + str(int_finalTime_minutes), "minutes (" + str(int_finalTime_hours), "hours))")
+	print("Sife of the last file generated : ", colored(str(int_lastFileSize) + " Mb", "cyan"))
+	print("Folder size (total) : ", colored(str(int_folderSize) + " Mb", "magenta"))
+	print("Generation time : ", str(int_finalTime_seconds), "seconds (" + str(int_finalTime_minutes), "minutes (" + str(int_finalTime_hours), "hours))")
 	print("========")
 	input("-> Press [ENTER] to continue...")
 	sys.exit()
