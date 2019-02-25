@@ -166,7 +166,7 @@ def main():
 	cprint("Done!", "green")
 	print("========")
 	print("Number of files: "+str(int_files_to_generate))
-	print("Sife of the last file generated : ", colored(str(int_lastFileSize) + " Mb", "cyan"))
+	print("Size of the last file generated : ", colored(str(int_lastFileSize) + " Mb", "cyan"))
 	print("Folder size (total) : ", colored(str(int_folderSize) + " Mb", "magenta"))
 	print("Generation time : ", str(int_finalTime_seconds), "seconds (" + str(int_finalTime_minutes), "minutes (" + str(int_finalTime_hours), "hours))")
 	print("========")
