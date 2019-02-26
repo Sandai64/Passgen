@@ -11,7 +11,7 @@
 	- the version of Passgen used
 
 ### Fixes
-- Fixed a crash whith the folder size calculation
+- Fixed a crash with the folder size calculation
 
 ### additional notes
 - the `passgenlib.py` file has been removed from the source folder, as it is no longer used
