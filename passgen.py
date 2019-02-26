@@ -2,7 +2,7 @@
 # File: Main script (is the freezed script)
 # ---------------------------------------------------
 
-programVersion = "1.2.4"
+programVersion = "1.2.5"
 
 import string
 import os
@@ -27,12 +27,12 @@ def get_folder_size(start_path): # Returns the directory size in bytes
 	return total_size
 
 def main():
-	print("MTLK's Password Generator")
+	print(colored("Sandai", "magenta") + "'s Password Generator")
 	print("Version", colored(programVersion, "cyan"))
 
 	print("====Select a generation mode====")
 	print("1/ secrets.token_hex()")
-	print("2/ secrets.choice() [recommended]")
+	print("2/ secrets.choice() [" + colored("recommended", "green") + "]")
 
 	if input("> ") == "1":
 		str_generation_mode = "HEX"
@@ -51,7 +51,7 @@ def main():
 	str_file_extension = str(input("[STR] File extension? : "))
 
 	#creating folder, works on Windows / Linux
-	cprint("[INFO]: Creating folder '" + str_folder_name + "'...")
+	cprint("[INFO]: Creating folder '" + str_folder_name + "'...", "green")
 
 	try:
 		os.mkdir(str_folder_name)
@@ -90,7 +90,7 @@ def main():
 				break
 			
 			elif int_charlist_choice == "4":
-				print("Please specify the file to load (Exemple: charset.txt)")
+				cprint("Please specify the file to load (Exemple: charset.txt)", "cyan")
 				userFile = input("File> ")
 				
 				try:
@@ -104,37 +104,40 @@ def main():
 					continue
 
 			else:
-				print("Invalid choice!")
+				cprint("Invalid choice!", "yellow")
 				continue
 
 	print("========")
 	input("Press [ENTER] to continue...")
-	print("Please wait, this can take a while...")
+	cprint("Please wait, this can take a while...", "cyan")
 	print("========")
+
 	startTime = time.time()
 
 	for int_file_index in range(int_files_to_generate):
 
 		str_current_file_name = str_file_prefix + str(int_file_index) + str_file_extension
-		print("Generating " + str(int_passwords_to_generate) + " passwords in " + str_current_file_name + "...")
+		cprint("Generating " + str(int_passwords_to_generate) + " passwords in " + str_current_file_name + "...", "cyan")
 
 		currentFile = open(str_current_file_name, "w", int_buffer_size)
 		
 		if str_generation_mode == "HEX": # Generate using secrets.token_hex()
-			for x in range(int_passwords_to_generate):
+			
+            for x in range(int_passwords_to_generate):
 				currentFile.write(token_hex(nbytes=random.randint(int_bits_to_generate_min, int_bits_to_generate_max))+"\n")
+
 			currentFile.close()
 
 		elif str_generation_mode == "ASCII": # Generate using secrets.choice()
 			if int_binchoice_add_verbosity == 1: # if user requested to write add. infos in file
 				currentFile.write("====Infos====\n")
-				currentFile.write("bits per line (min): "+str(int_bits_to_generate_min)+"\n")
-				currentFile.write("bits per line (max): "+str(int_bits_to_generate_max)+"\n")
-				currentFile.write("char table: "+str(str_charset)+"\n")
-				currentFile.write("file name : "+str(str_current_file_name)+"\n")
-				currentFile.write("Buffer size : "+str(int_buffer_size)+"\n")
-				currentFile.write("generator version: "+str(programVersion)+"\n")
-				currentFile.write("total passwords: "+str(int_passwords_to_generate)+"\n")
+				currentFile.write("bits per line (min): " + str(int_bits_to_generate_min) + "\n")
+				currentFile.write("bits per line (max): " + str(int_bits_to_generate_max) + "\n")
+				currentFile.write("char table: " + str(str_charset) + "\n")
+				currentFile.write("file name : " + str(str_current_file_name) + "\n")
+				currentFile.write("Buffer size : " + str(int_buffer_size) + "\n")
+				currentFile.write("generator version: " + str(programVersion) + "\n")
+				currentFile.write("total passwords: " + str(int_passwords_to_generate) + "\n")
 				currentFile.write("====Start====\n")
 			
 				for x in range(int_passwords_to_generate):
@@ -149,6 +152,7 @@ def main():
 
 		shutil.move(str_current_file_name, str_folder_name) # that should fix the crash when moving a file (hopefully)
 		
+        # Old method used to move files, replaced by shutil.move()
 		#if os.name == 'nt':
 		#	os.system("move '" + str_current_file_name + "' '" + str_folder_name + "'")
 		#else:
@@ -165,11 +169,12 @@ def main():
 	print("========")
 	cprint("Done!", "green")
 	print("========")
-	print("Number of files: "+str(int_files_to_generate))
+	print("Number of files : " + str(int_files_to_generate))
 	print("Size of the last file generated : ", colored(str(int_lastFileSize) + " Mb", "cyan"))
 	print("Folder size (total) : ", colored(str(int_folderSize) + " Mb", "magenta"))
 	print("Generation time : ", str(int_finalTime_seconds), "seconds (" + str(int_finalTime_minutes), "minutes (" + str(int_finalTime_hours), "hours))")
 	print("========")
-	input("-> Press [ENTER] to continue...")
+
+	input("-> Press [ENTER] to quit...")
 	sys.exit()
 main()
