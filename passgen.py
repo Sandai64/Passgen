@@ -123,7 +123,7 @@ def main():
 		
 		if str_generation_mode == "HEX": # Generate using secrets.token_hex()
 			
-            for x in range(int_passwords_to_generate):
+			for x in range(int_passwords_to_generate):
 				currentFile.write(token_hex(nbytes=random.randint(int_bits_to_generate_min, int_bits_to_generate_max))+"\n")
 
 			currentFile.close()
@@ -152,7 +152,7 @@ def main():
 
 		shutil.move(str_current_file_name, str_folder_name) # that should fix the crash when moving a file (hopefully)
 		
-        # Old method used to move files, replaced by shutil.move()
+		# Old method used to move files, replaced by shutil.move()
 		#if os.name == 'nt':
 		#	os.system("move '" + str_current_file_name + "' '" + str_folder_name + "'")
 		#else:
