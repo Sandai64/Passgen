@@ -10,10 +10,10 @@ First things first, you need these libraries in your Python installation: `Color
 
 ### Installing the dependencies:
 
-`python -m pip install -U pip`
+`python -m pip install -U pip` to update pip
 
 `python -m pip install colorama termcolor cxfreeze`
 
 ### Compiling
 
-Run the `BUILD.bat` in the source folder you should now have the `.exe` file! yay!
+Run the `BUILD.bat` in the source folder. You should now have the `.exe` file! yay!
